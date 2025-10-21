@@ -9,3 +9,4 @@ datasets
 langchain 
 chromadb 
 sentence-transformers
+langchain-huggingface
