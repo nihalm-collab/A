@@ -2,28 +2,29 @@ import os
 from dotenv import load_dotenv
 import streamlit as st
 from datasets import load_dataset
-import google.generativeai as genai
+from google import genai
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # -------------------
-# 0. Ortam değişkenlerini yükle
+# Ortam değişkenlerini yükle
 # -------------------
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-genai.configure(api_key=GEMINI_API_KEY)
+# Gemini API client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # -------------------
-# 1. Streamlit başlık
+# Streamlit başlık
 # -------------------
 st.set_page_config(page_title="📚 Kitapyurdu RAG Chatbot", page_icon="📖")
 st.title("📚 Kitapyurdu RAG Chatbot")
 
 # -------------------
-# 2. Dataset yükleme
+# Dataset yükleme
 # -------------------
 @st.cache_data
 def load_kitapyurdu_dataset():
@@ -37,7 +38,7 @@ dataset = load_kitapyurdu_dataset()
 st.write(f"✅ Dataset yüklendi. Toplam yorum: {len(dataset)}")
 
 # -------------------
-# 3. Metinleri böl ve embedding oluştur
+# Metinleri böl ve embedding oluştur
 # -------------------
 @st.cache_resource
 def create_vectorstore(dataset):
@@ -54,7 +55,7 @@ vectordb = create_vectorstore(dataset)
 st.write("✅ Vectorstore hazır.")
 
 # -------------------
-# 4. Chat fonksiyonu
+# Chat fonksiyonu
 # -------------------
 def generate_answer(query):
     # Benzer metinleri retrieval
@@ -72,15 +73,15 @@ Kullanıcı sorusu: {query}
 Yanıtını kısa, anlaşılır ve bilgilendirici şekilde ver.
 """
     # Gemini ile cevap oluştur
-    response = genai.chat.create(
+    response = client.models.generate_content(
         model="gemini-2.0-flash",
-        messages=[{"role":"user","content":prompt}],
+        contents=prompt,
         temperature=0.2
     )
-    return response.last
+    return response.text
 
 # -------------------
-# 5. Streamlit arayüz
+# Streamlit arayüz
 # -------------------
 user_input = st.text_input("Sorunuzu yazın:")
 if st.button("Gönder"):
