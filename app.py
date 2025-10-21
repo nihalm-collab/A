@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import streamlit as st
 from datasets import load_dataset
 from google import genai
-from langchain.embeddings import HuggingFaceInstructEmbeddings
+from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
