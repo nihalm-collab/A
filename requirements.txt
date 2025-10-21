@@ -6,3 +6,6 @@ torch
 chromadb
 python-dotenv
 datasets
+langchain 
+chromadb 
+sentence-transformers
